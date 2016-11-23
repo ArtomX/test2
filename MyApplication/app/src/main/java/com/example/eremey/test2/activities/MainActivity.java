@@ -4,6 +4,7 @@ package com.example.eremey.test2.activities;
 
 
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,15 +18,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.eremey.test2.fragments.BlankFragment;
 import com.example.eremey.test2.R;
 import com.example.eremey.test2.listFragments.ListWall;
 import com.example.eremey.test2.listFragments.MainListFragment;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKScope;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.methods.VKApiFriends;
+import com.vk.sdk.util.VKUtil;
+
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private  String [] scope=new String [] {VKScope.MESSAGES,VKScope.FRIENDS,VKScope.WALL,VKScope.AUDIO,VKScope.PHOTOS,VKScope.GROUPS,VKScope.PAGES,VKScope.OFFLINE,VKScope.STATUS,VKScope.VIDEO};
 
     private BlankFragment blankFragment;
     private MainListFragment mainListFragment;
@@ -60,6 +72,26 @@ public class MainActivity extends AppCompatActivity
         blankFragment=new BlankFragment();
         mainListFragment=new MainListFragment();
         listWall=new ListWall();
+
+        //String[] fingerprints = VKUtil.getCertificateFingerprint(this, this.getPackageName());
+        //System.out.println(Arrays.asList(fingerprints));
+        VKSdk.login(this,scope);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken res) {
+                Toast.makeText(getApplicationContext(),"Good connection",Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onError(VKError error) {
+                Toast.makeText(getApplicationContext()," Error",Toast.LENGTH_LONG).show();
+            }
+        })) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override
